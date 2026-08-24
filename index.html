@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Austin Jacob | 50 Years</title>
+    <!-- Tailwind for future flexibility -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --obsidian: #080808;
+            --ivory: #fcfaf2;
+            --ivory-dim: rgba(252, 250, 242, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--obsidian);
+            color: var(--ivory);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #080808 100%);
+        }
+
+        /* Layout Containers */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        /* Navigation Styling */
+        #nav-header {
+            position: fixed;
+            top: 30px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        #nav-header.scrolled {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .nav-text {
+            letter-spacing: 6px;
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Hero Styling */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 50px;
+        }
+
+        .portrait-frame {
+            position: relative;
+            width: 280px;
+            height: 360px;
+            border: 1px solid var(--gold);
+            padding: 12px;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .portrait-frame::before {
+            content: '';
+            position: absolute;
+            top: -6px; left: -6px; right: -6px; bottom: -6px;
+            border: 1px solid var(--ivory);
+            opacity: 0.2;
+        }
+
+        .image-box {
+            width: 100%;
+            height: 100%;
+            background: #151515;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid rgba(252, 250, 242, 0.1);
+        }
+
+        /* NEW: Image Auto-Adjust Logic */
+        .image-box img, .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* This makes the image fill the area and crop to fit */
+            object-position: center;
+            display: block;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #bf953f);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer-gold 4s linear infinite;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        @keyframes shimmer-gold {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--ivory-dim);
+            max-width: 600px;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Family Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 40px 20px;
+            transition: all 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.04);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .circle-initial {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 1px solid var(--gold);
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), transparent);
+        }
+
+        .role-tag {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--ivory);
+            margin-bottom: 20px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .family-quote {
+            font-size: 0.95rem;
+            color: var(--ivory-dim);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: #111;
+            border: 1px solid rgba(252, 250, 242, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: border 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--gold);
+        }
+
+        .gallery-item span {
+            color: rgba(252, 250, 242, 0.2);
+            font-style: italic;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 2px;
+            position: absolute; /* Place behind image if image exists */
+            z-index: 0;
+        }
+        
+        .gallery-item img {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Typography & Section Titles */
+        .title-pre {
+            font-size: 11px;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 15px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #bf953f);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer-gold 6s linear infinite;
+        }
+
+        .footer-name {
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+            animation: elegant-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes elegant-glow {
+            0%, 100% { 
+                text-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+                filter: brightness(1);
+            }
+            50% { 
+                text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 50px rgba(212, 175, 55, 0.4);
+                filter: brightness(1.2);
+            }
+        }
+
+        .ivory-accent {
+            color: var(--ivory);
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            padding: 120px 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.02));
+        }
+
+        .credits {
+            font-size: 11px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--ivory-dim);
+            margin-top: 15px;
+            animation: soft-pulse 5s ease-in-out infinite;
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            animation: breathe-slow 12s ease-in-out infinite;
+        }
+
+        @keyframes breathe-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.015); }
+        }
+
+        @keyframes soft-pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(0.5deg); }
+        }
+
+        .floating { animation: float 8s ease-in-out infinite; }
+
+        /* Global Alive Background */
+        #neural {
+            animation: canvas-breathe 20s ease-in-out infinite;
+        }
+
+        @keyframes canvas-breathe {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.08); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="neural"></canvas>
+
+    <!-- Navigation -->
+    <div id="nav-header">
+        <span class="nav-text">AUSTIN JACOB • 50 YEARS</span>
+    </div>
+
+    <!-- Hero -->
+    <section class="container hero">
+        <div class="portrait-frame floating">
+            <div class="image-box">
+                <!-- AUTOMATICALLY ADJUSTS: Just insert your <img> here -->
+                <!-- <img src="your-image.jpg" alt="Austin Jacob"> -->
+                <span style="font-size: 50px; opacity: 0.1;" class="serif italic">AJ</span>
+            </div>
+            <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 4px 20px; font-size: 9px; font-weight: bold; letter-spacing: 2px; white-space: nowrap;">THE GOLDEN JUBILEE</div>
+        </div>
+        <h1 class="serif">Austin Jacob</h1>
+        <p class="hero-subtitle serif">"A legacy is not just what you leave behind, but the lives you touch along the way."</p>
+    </section>
+
+    <!-- Family -->
+    <section class="container section">
+        <span class="title-pre reveal">Family Connections</span>
+        <h2 class="section-title serif reveal">A Network of Love</h2>
+        <div class="grid">
+            <div class="glass-card reveal">
+                <div class="circle-initial">R</div>
+                <h3>Ressy Austin</h3>
+                <span class="role-tag">Partner in Life</span>
+                <p class="family-quote">"You made my life happier since the day we met <3"</p>
+            </div>
+            <div class="glass-card reveal">
+                <div class="circle-initial">A</div>
+                <h3>Alan Austin</h3>
+                <span class="role-tag">Devoted Son</span>
+                <p class="family-quote">"Thank you for making my life wonderful, Happy Birthday Dad."</p>
+            </div>
+            <div class="glass-card reveal">
+                <div class="circle-initial">A</div>
+                <h3>Angeline Austin</h3>
+                <span class="role-tag">Beloved Daughter</span>
+                <p class="family-quote">"You make my life brighter!"</p>
+            </div>
+            <div class="glass-card reveal">
+                <div class="circle-initial">A</div>
+                <h3>Aiden Austin</h3>
+                <span class="role-tag">Youngest Son</span>
+                <p class="family-quote">"Appa, you are the best father in the world!"</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Memories -->
+    <section class="container section">
+        <span class="title-pre reveal">Gallery</span>
+        <h2 class="section-title serif reveal">Legacy Moments</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item reveal">
+                <!-- Example of auto-adjusting image -->
+                <!-- <img src="memory1.jpg" alt="Memory 01"> -->
+                <span class="serif">Memory 01</span>
+            </div>
+            <div class="gallery-item reveal"><span class="serif">Memory 02</span></div>
+            <div class="gallery-item reveal"><span class="serif">Memory 03</span></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="container section">
+        <div class="footer-name serif italic">Happy 50th Birthday, Austin</div>
+        <p class="credits">With love from the Austin Family</p>
+        <p class="credits" style="color: var(--gold); opacity: 0.5;">Created by Alan Austin</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('neural');
+        const ctx = canvas.getContext('2d');
+        let pts = [];
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            pts = [];
+            let count = Math.min(window.innerWidth / 15, 60);
+            for(let i=0; i<count; i++) {
+                pts.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = 'rgba(212, 175, 55, 0.4)';
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.1)';
+            pts.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2); ctx.fill();
+                for(let j=i+1; j<pts.length; j++) {
+                    let d = Math.hypot(p.x-pts[j].x, p.y-pts[j].y);
+                    if(d < 150) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(draw);
+        }
+
+        function reveal() {
+            // Reveal animations
+            document.querySelectorAll('.reveal').forEach(el => {
+                let rect = el.getBoundingClientRect();
+                if(rect.top < window.innerHeight - 50) el.classList.add('active');
+            });
+
+            // Navigation hide logic
+            const nav = document.getElementById('nav-header');
+            if (window.scrollY > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }
+
+        window.addEventListener('resize', init);
+        window.addEventListener('scroll', reveal);
+        init(); draw(); reveal();
+    </script>
+</body>
+</html>
